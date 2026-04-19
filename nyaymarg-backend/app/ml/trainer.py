@@ -55,6 +55,9 @@ async def train_all_models() -> dict:
 def _train_sync(registry) -> dict:
     """Blocking training routine — called inside executor."""
     ARTEFACT_DIR.mkdir(parents=True, exist_ok=True)
+    
+    import warnings
+    warnings.filterwarnings("ignore")
 
     # ── Model 1: Court Backlog Risk (RandomForest) ───────────────────────────
     X_rf = registry.df_courts[RF_FEATURES]

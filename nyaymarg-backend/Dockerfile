@@ -23,6 +23,9 @@ RUN mkdir -p app/ml/artefacts uploads data/ddl_judicial && \
 
 USER nyaymarg
 
+# Prevent Matplotlib warning about writable config directory
+ENV MPLCONFIGDIR=/tmp/matplotlib
+
 # Render sets $PORT dynamically; default 8000 for local/Docker
 ENV PORT=8000
 

@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse, Response
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
@@ -133,6 +134,16 @@ app.include_router(users.router,         prefix=f"{PREFIX}/users",         tags=
 
 # External Legal APIs
 app.include_router(external.router,      prefix=f"{PREFIX}",               tags=["External Legal APIs"])
+
+
+# ── Root & Favicon ────────────────────────────────────────────────────────────
+@app.get("/", include_in_schema=False)
+async def root_redirect():
+    return RedirectResponse(url="/docs")
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon_handler():
+    return Response(content=b"", status_code=204)
 
 
 # ── Health ────────────────────────────────────────────────────────────────────
