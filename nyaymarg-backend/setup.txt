@@ -1,0 +1,80 @@
+# NyayMarg API — Setup Guide
+
+This document covers the steps required to run the NyayMarg backend (FastAPI) locally and prepare it for production deployment.
+
+## 1. Local Setup (Recommended: Docker)
+
+Using Docker is the easiest way to ensure all dependencies (PostgreSQL, Redis, Celery) are configured correctly.
+
+1. **Environment Variables**:
+   ```bash
+   cp .env.example .env
+   # Edit .env and set a secure DB_PASSWORD
+   ```
+2. **Start Services**:
+   ```bash
+   docker-compose up -d
+   ```
+   - **Database**: Created automatically.
+   - **Schema**: Tables are created automatically on API startup.
+   - **Port**: API will be available at http://localhost:8000
+   - **Docs**: Interactive swagger docs at http://localhost:8000/docs
+
+## 2. Local Setup (Native / No Docker)
+
+If running without Docker, you must handle external dependencies manually.
+
+1. **Install Dependencies**:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # venv\Scripts\activate on Windows
+   pip install -r requirements.txt
+   ```
+2. **Setup Database (PostgreSQL)**:
+   - Create a database named `nyaymarg`:
+     ```sql
+     CREATE DATABASE nyaymarg;
+     ```
+   - Update `DATABASE_URL` in your `.env` to match your local credentials.
+3. **Setup Cache (Redis)**:
+   - Ensure a Redis server is running locally (default port 6379).
+4. **Run Migrations (Optional)**:
+   - The app will attempt to create tables on startup, but you can run them manually:
+     ```bash
+     alembic upgrade head
+     ```
+5. **Start API**:
+   ```bash
+   uvicorn app.main:app --reload
+   ```
+6. **Start Background Worker (Optional)**:
+   ```bash
+   celery -A app.tasks.celery_app worker --loglevel=info
+   ```
+
+## 3. Deployment Setup (e.g., Render)
+
+When deploying to a production environment like Render:
+
+### Phase A: Infrastructure
+1. **PostgreSQL**: Provision a managed PostgreSQL instance.
+2. **Redis**: Provision a managed Redis instance.
+
+### Phase B: Configuration
+In your deployment platform's dashboard, set the following environment variables:
+- `ENVIRONMENT`: `production`
+- `DATABASE_URL`: `postgresql+asyncpg://user:pass@host:port/db`
+- `REDIS_URL`: `redis://host:port/0`
+- `SECRET_KEY`: A long random string for auth security.
+- `DDL_ENABLED`: `False` (unless you have uploaded the large judicial dataset).
+
+### Phase C: Deployment Run Commands
+- **Build Command**: `pip install -r requirements.txt`
+- **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- **Migrations**: The app automatically runs `Base.metadata.create_all` on startup. For subsequent schema updates, use `alembic upgrade head`.
+
+---
+**Note on Database**:
+- **Local (Docker)**: Fully automatic.
+- **Local (Native)**: You MUST create the empty database `nyaymarg` first; the app will handle the tables.
+- **Production**: You MUST provision the database service; the app will handle the tables.
