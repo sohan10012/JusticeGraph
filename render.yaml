@@ -1,10 +1,117 @@
 services:
+  # ── Main API ────────────────────────────────────────────────────────────────
   - type: web
-    name: justice-graph-api
-    env: python
+    name: nyaymarg-api
+    runtime: python
+    region: singapore
     plan: free
-    buildCommand: python -m pip install --upgrade pip && pip install -r requirements.txt
-    startCommand: uvicorn justice_graph.api.main:app --host 0.0.0.0 --port 10000
+    rootDir: nyaymarg-backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 1
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.0
+        value: "3.12.3"
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "False"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: nyaymarg-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "1440"
+      - key: REDIS_URL
+        fromService:
+          name: nyaymarg-redis
+          type: redis
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          name: nyaymarg-redis
+          type: redis
+          property: connectionString
+      - key: CELERY_RESULT_BACKEND
+        fromService:
+          name: nyaymarg-redis
+          type: redis
+          property: connectionString
+      - key: MODEL_ARTEFACTS_DIR
+        value: "/tmp/artefacts"
+      - key: UPLOAD_DIR
+        value: "/tmp/uploads"
+      - key: SKIP_MODEL_TRAINING
+        value: "True"
+      - key: BACKEND_CORS_ORIGINS
+        value: "*"
+      - key: ECIAPI_ENABLED
+        value: "True"
+      - key: IK_ENABLED
+        value: "False"
+      - key: KANOON_DEV_ENABLED
+        value: "False"
+      - key: ECOURTSINDIA_ENABLED
+        value: "False"
+      - key: DATA_GOV_ENABLED
+        value: "False"
+      - key: DDL_ENABLED
+        value: "False"
+      - key: COURTLISTENER_ENABLED
+        value: "False"
+    healthCheckPath: /health
+
+  # ── Celery Worker ───────────────────────────────────────────────────────────
+  # Disabled for initial Render deploy (free tier stability)
+  # - type: worker
+  #   name: nyaymarg-worker
+  #   runtime: python
+  #   region: singapore
+  #   plan: free
+  #   rootDir: nyaymarg-backend
+  #   buildCommand: pip install -r requirements.txt
+  #   startCommand: celery -A app.tasks.celery_app worker --loglevel=info --concurrency=1
+  #   envVars:
+  #     - key: PYTHON_VERSION
+  #       value: "3.12.3"
+  #     - key: DATABASE_URL
+  #       fromDatabase:
+  #         name: nyaymarg-db
+  #         property: connectionString
+  #     - key: REDIS_URL
+  #       fromService:
+  #         name: nyaymarg-redis
+  #         type: redis
+  #         property: connectionString
+  #     - key: CELERY_BROKER_URL
+  #       fromService:
+  #         name: nyaymarg-redis
+  #         type: redis
+  #         property: connectionString
+  #     - key: CELERY_RESULT_BACKEND
+  #       fromService:
+  #         name: nyaymarg-redis
+  #         type: redis
+  #         property: connectionString
+  #     - key: SECRET_KEY
+  #       fromService:
+  #         name: nyaymarg-api
+  #         type: web
+  #         envVarKey: SECRET_KEY
+  #     - key: MODEL_ARTEFACTS_DIR
+  #       value: "/tmp/artefacts"
+
+# ── Managed databases ───────────────────────────────────────────────────────
+databases:
+  - name: nyaymarg-db
+    region: singapore
+    plan: free
+    databaseName: nyaymarg
+    user: nyaymarg
+
+  - name: nyaymarg-redis
+    region: singapore
+    plan: free

@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Environment files (never commit real secrets)
+.env
+!.env.example
+
+# ML artefacts (trained models — large, rebuilt on startup)
+nyaymarg-backend/app/ml/artefacts/
+
+# Uploads (user-submitted files)
+nyaymarg-backend/uploads/
+
+# DDL real dataset files (too large for git)
+nyaymarg-backend/data/
+
+# SQLite dev database
+*.db
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+logs/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

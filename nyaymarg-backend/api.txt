@@ -1,0 +1,2062 @@
+========================================================
+               NYAYMARG API DOCUMENTATION               
+========================================================
+
+Base URL: http://localhost:8000
+
+This document provides a clean and simple overview of all API endpoints,
+their parameters, and what they return to help with integration.
+
+--------------------------------------------------------
+POST /api/v1/auth/register
+Register
+
+Register a new NyayMarg account.
+
+Request Body:
+  Content-Type: application/json
+  See Swagger UI for exact schema.
+
+Responses:
+  201: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'POST' \
+  'http://localhost:8000/api/v1/auth/register' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+POST /api/v1/auth/login
+Login
+
+Request Body:
+  Content-Type: application/json
+  See Swagger UI for exact schema.
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'POST' \
+  'http://localhost:8000/api/v1/auth/login' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+POST /api/v1/auth/refresh
+Refresh
+
+Request Body:
+  Content-Type: application/json
+  See Swagger UI for exact schema.
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'POST' \
+  'http://localhost:8000/api/v1/auth/refresh' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+POST /api/v1/auth/logout
+Logout
+
+Client-side token deletion. Stateless — token blacklisting via Redis can be added.
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'POST' \
+  'http://localhost:8000/api/v1/auth/logout' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/auth/me
+Get Me
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/auth/me' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+PUT /api/v1/auth/me
+Update Me
+
+Request Body:
+  Content-Type: application/json
+  See Swagger UI for exact schema.
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'PUT' \
+  'http://localhost:8000/api/v1/auth/me' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/courts/
+List Courts
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+state                | query      | No       |            | No description
+court_type           | query      | No       |            | No description
+risk                 | query      | No       |            | low risk | moderate risk | high risk
+page                 | query      | No       | integer    | No description
+page_size            | query      | No       | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/courts/' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/courts/stats/summary
+Court Summary
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/courts/stats/summary' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/courts/stats/risk-map
+Risk Map
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/courts/stats/risk-map' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+POST /api/v1/courts/predict-risk
+Predict Court Risk
+
+Request Body:
+  Content-Type: application/json
+  See Swagger UI for exact schema.
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'POST' \
+  'http://localhost:8000/api/v1/courts/predict-risk' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/courts/{court_id}
+Get Court
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+court_id             | path       | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/courts/example_id' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/courts/{court_id}/judges
+Court Judges
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+court_id             | path       | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/courts/example_id/judges' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/courts/{court_id}/cases
+Court Cases
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+court_id             | path       | Yes      | string     | No description
+page                 | query      | No       | integer    | No description
+page_size            | query      | No       | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/courts/example_id/cases' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/judges/
+List Judges
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+state                | query      | No       |            | No description
+specialization       | query      | No       |            | No description
+page                 | query      | No       | integer    | No description
+page_size            | query      | No       | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/judges/' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/judges/leaderboard
+Leaderboard
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+top_n                | query      | No       | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/judges/leaderboard' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/judges/stats/bias-analysis
+Bias Analysis
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/judges/stats/bias-analysis' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/judges/stats/performance
+Performance Stats
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/judges/stats/performance' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/judges/{judge_id}
+Get Judge
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+judge_id             | path       | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/judges/example_id' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/judges/{judge_id}/cases
+Judge Cases
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+judge_id             | path       | Yes      | string     | No description
+page                 | query      | No       | integer    | No description
+page_size            | query      | No       | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/judges/example_id/cases' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/cases/
+List Cases
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+case_type            | query      | No       |            | No description
+status               | query      | No       |            | No description
+state                | query      | No       |            | No description
+court_id             | query      | No       |            | No description
+page                 | query      | No       | integer    | No description
+page_size            | query      | No       | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/cases/' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+POST /api/v1/cases/
+Create Case
+
+Researcher/Admin: add a new case to the database.
+
+Request Body:
+  Content-Type: application/json
+  See Swagger UI for exact schema.
+
+Responses:
+  201: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'POST' \
+  'http://localhost:8000/api/v1/cases/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/cases/stats/summary
+Case Summary
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/cases/stats/summary' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/cases/stats/pendency
+Pendency
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/cases/stats/pendency' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/cases/search
+Search Cases
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+q                    | query      | Yes      | string     | No description
+page                 | query      | No       | integer    | No description
+page_size            | query      | No       | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/cases/search' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/cases/{case_id}
+Get Case
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+case_id              | path       | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/cases/example_id' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/laws/
+List Laws
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/laws/' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/laws/category/{category}
+Laws By Category
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+category             | path       | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/laws/category/example_id' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/laws/{law_id}
+Get Law
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+law_id               | path       | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/laws/example_id' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+POST /api/v1/predict/
+Predict
+
+Single case outcome prediction — requires authentication.
+
+Request Body:
+  Content-Type: application/json
+  See Swagger UI for exact schema.
+
+Responses:
+  201: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'POST' \
+  'http://localhost:8000/api/v1/predict/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+POST /api/v1/predict/batch
+Predict Batch
+
+Batch prediction (up to 1000 cases).
+
+Request Body:
+  Content-Type: application/json
+  See Swagger UI for exact schema.
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'POST' \
+  'http://localhost:8000/api/v1/predict/batch' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+POST /api/v1/predict/court-risk
+Predict Court Risk
+
+Wraps court backlog RF prediction (convenience alias).
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+req                  | query      | Yes      |            | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'POST' \
+  'http://localhost:8000/api/v1/predict/court-risk' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/predict/history
+Prediction History
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+page                 | query      | No       | integer    | No description
+page_size            | query      | No       | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/predict/history' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/predict/export/{prediction_id}
+Export Prediction
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+prediction_id        | path       | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/predict/export/example_id' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/predict/{prediction_id}
+Get Prediction
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+prediction_id        | path       | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/predict/example_id' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+DELETE /api/v1/predict/{prediction_id}
+Delete Prediction
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+prediction_id        | path       | Yes      | string     | No description
+
+Responses:
+  204: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'DELETE' \
+  'http://localhost:8000/api/v1/predict/example_id' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/analytics/overview
+Overview
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/analytics/overview' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/analytics/outcomes
+Outcomes
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+fmt                  | query      | No       | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/analytics/outcomes' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/analytics/courts
+Court Level Chart
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+fmt                  | query      | No       | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/analytics/courts' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/analytics/duration
+Duration Trend
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+fmt                  | query      | No       | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/analytics/duration' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/analytics/case-types
+Case Types
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+fmt                  | query      | No       | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/analytics/case-types' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/analytics/judge-performance
+Judge Performance
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+fmt                  | query      | No       | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/analytics/judge-performance' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/analytics/state-heatmap
+State Heatmap
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+fmt                  | query      | No       | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/analytics/state-heatmap' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/analytics/model-performance
+Model Performance
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/analytics/model-performance' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/analytics/export
+Export Analytics Pdf
+
+Full analytics report as PDF. Requires authentication.
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/analytics/export' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+POST /api/v1/similar/search
+Search Similar
+
+Request Body:
+  Content-Type: application/json
+  See Swagger UI for exact schema.
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'POST' \
+  'http://localhost:8000/api/v1/similar/search' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/similar/cases
+List Indexed Cases
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+page                 | query      | No       | integer    | No description
+page_size            | query      | No       | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/similar/cases' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/similar/cases/{case_id}
+Get Indexed Case
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+case_id              | path       | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/similar/cases/example_id' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+POST /api/v1/data/upload
+Upload Dataset
+
+Request Body:
+  Content-Type: multipart/form-data
+  See Swagger UI for exact schema.
+
+Responses:
+  201: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'POST' \
+  'http://localhost:8000/api/v1/data/upload' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/data/
+List Datasets
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/data/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/data/{dataset_id}
+Get Dataset
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+dataset_id           | path       | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/data/example_id' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+DELETE /api/v1/data/{dataset_id}
+Delete Dataset
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+dataset_id           | path       | Yes      | string     | No description
+
+Responses:
+  204: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'DELETE' \
+  'http://localhost:8000/api/v1/data/example_id' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/data/{dataset_id}/status
+Dataset Status
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+dataset_id           | path       | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/data/example_id/status' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/model/active
+Active Model
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/model/active' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+POST /api/v1/model/train
+Trigger Training
+
+Trigger model retraining as a background Celery task.
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'POST' \
+  'http://localhost:8000/api/v1/model/train' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/model/train/{job_id}
+Training Job Status
+
+Poll Celery task status.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+job_id               | path       | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/model/train/example_id' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/model/feature-importance
+Feature Importance
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/model/feature-importance' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/model/compare
+Compare Models
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/model/compare' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+POST /api/v1/chat/message
+Send Message
+
+Request Body:
+  Content-Type: application/json
+  See Swagger UI for exact schema.
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'POST' \
+  'http://localhost:8000/api/v1/chat/message' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/chat/history
+Chat History
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+session_id           | query      | No       | string     | No description
+page                 | query      | No       | integer    | No description
+page_size            | query      | No       | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/chat/history' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+DELETE /api/v1/chat/history
+Clear History
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+session_id           | query      | No       | string     | No description
+
+Responses:
+  204: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'DELETE' \
+  'http://localhost:8000/api/v1/chat/history' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+POST /api/v1/bookmarks/
+Add Bookmark
+
+Request Body:
+  Content-Type: application/json
+  See Swagger UI for exact schema.
+
+Responses:
+  201: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'POST' \
+  'http://localhost:8000/api/v1/bookmarks/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/bookmarks/
+List Bookmarks
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+entity_type          | query      | No       |            | No description
+page                 | query      | No       | integer    | No description
+page_size            | query      | No       | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/bookmarks/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+DELETE /api/v1/bookmarks/{bookmark_id}
+Delete Bookmark
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+bookmark_id          | path       | Yes      | string     | No description
+
+Responses:
+  204: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'DELETE' \
+  'http://localhost:8000/api/v1/bookmarks/example_id' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/notifications/
+List Notifications
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+unread_only          | query      | No       | boolean    | No description
+page                 | query      | No       | integer    | No description
+page_size            | query      | No       | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/notifications/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/notifications/unread-count
+Unread Count
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/notifications/unread-count' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+PUT /api/v1/notifications/{notification_id}/read
+Mark Read
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+notification_id      | path       | Yes      | string     | No description
+
+Responses:
+  204: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'PUT' \
+  'http://localhost:8000/api/v1/notifications/example_id/read' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+PUT /api/v1/notifications/read-all
+Mark All Read
+
+Responses:
+  204: Successful Response
+
+Example usage (Curl):
+curl -X 'PUT' \
+  'http://localhost:8000/api/v1/notifications/read-all' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+DELETE /api/v1/notifications/{notification_id}
+Delete Notification
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+notification_id      | path       | Yes      | string     | No description
+
+Responses:
+  204: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'DELETE' \
+  'http://localhost:8000/api/v1/notifications/example_id' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/users/
+List Users
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+page                 | query      | No       | integer    | No description
+page_size            | query      | No       | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/users/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/users/{user_id}
+Get User
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+user_id              | path       | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/users/example_id' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+PUT /api/v1/users/{user_id}/role
+Change Role
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+user_id              | path       | Yes      | string     | No description
+
+Request Body:
+  Content-Type: application/json
+  See Swagger UI for exact schema.
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'PUT' \
+  'http://localhost:8000/api/v1/users/example_id/role' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+PUT /api/v1/users/{user_id}/deactivate
+Deactivate User
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+user_id              | path       | Yes      | string     | No description
+
+Responses:
+  204: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'PUT' \
+  'http://localhost:8000/api/v1/users/example_id/deactivate' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <token>'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/ik/search
+Search Indian Kanoon
+
+Search for judgments, laws, or articles on api.indiankanoon.org.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+q                    | query      | Yes      | string     | No description
+page                 | query      | No       | integer    | No description
+doctype              | query      | No       |            | judgments | secondary | etc
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/ik/search' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/ik/doc/{doc_id}
+Get IK document text
+
+Fetch full text of a legal document by its ID.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+doc_id               | path       | Yes      | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/ik/doc/example_id' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/ik/fragment/{doc_id}
+Get IK document fragment
+
+Fetch matching snippet within a document for a specific query.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+doc_id               | path       | Yes      | integer    | No description
+q                    | query      | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/ik/fragment/example_id' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/ik/metadata/{doc_id}
+Get IK document metadata
+
+Fetch structured metadata (citation, bench, date) for a doc.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+doc_id               | path       | Yes      | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/ik/metadata/example_id' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/kd/courts
+List available courts on kanoon.dev
+
+Returns a list of all Indian courts supported by kanoon.dev.
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/kd/courts' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/kd/court/{court_id}/cases
+Get cases for a court
+
+Fetch latest cases filed in a specific court.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+court_id             | path       | Yes      | string     | No description
+limit                | query      | No       | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/kd/court/example_id/cases' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/kd/case/{case_id}/orders
+Get orders for a case
+
+Fetch all orders/judgments associated with a specific case ID.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+case_id              | path       | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/kd/case/example_id/orders' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/kd/case/{case_id}/insights
+Get AI legal insights
+
+Get kanoon.dev AI analysis of the case, including outcomes and 
+liberty claim classification.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+case_id              | path       | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/kd/case/example_id/insights' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/eci/case/{cnr}
+Get eCourts case by CNR
+
+Full case status from India's eCourts system using the CNR number.
+CNR format: `DLHC010001232024` (state + court + number + year).
+Returns parties, advocates, hearing history, next date, acts.
+**Free — no authentication required.**
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+cnr                  | path       | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/eci/case/example_id' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/eci/search
+Search eCourts by party name
+
+Search for cases by party name in a specific court.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+name                 | query      | Yes      | string     | No description
+court                | query      | No       |            | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/eci/search' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/eci/causelist
+Get court causelist
+
+Fetch the list of cases scheduled for a court on a specific date (DD-MM-YYYY).
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+court                | query      | Yes      | string     | No description
+date                 | query      | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/eci/causelist' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/eci/courts
+List eCourts court codes
+
+Returns metadata about courts supported for indexing.
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/eci/courts' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/ecw/case
+Get case details (paid API)
+
+Fetch full case details using the paid eCourtsIndia credit system.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+cnr                  | query      | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/ecw/case' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/ecw/causelist
+Get causelist (paid API)
+
+Fetch schedule of cases via paid API credits.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+court                | query      | Yes      | string     | No description
+date                 | query      | Yes      | string     | No description
+bench                | query      | No       |            | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/ecw/causelist' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/ecw/order
+Get case order (paid API)
+
+Download or fetch a specific order PDF/text.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+cnr                  | query      | Yes      | string     | No description
+order_id             | query      | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/ecw/order' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+POST /api/v1/ecw/refresh/bulk
+Bulk refresh CNR status
+
+Force a refresh from eCourts for multiple cases.
+
+Request Body:
+  Content-Type: application/json
+  See Swagger UI for exact schema.
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'POST' \
+  'http://localhost:8000/api/v1/ecw/refresh/bulk' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/ecw/refresh/{cnr}
+Force refresh single case
+
+Force a live update for a single case.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+cnr                  | path       | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/ecw/refresh/example_id' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/ecw/enums
+Get court/state metadata
+
+Returns mapping for state/district/court codes used in paid API.
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/ecw/enums' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/gov/infrastructure
+Get judicial infrastructure stats
+
+Fetch OGD data on court buildings, computerisation, and staffing.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+state                | query      | No       |            | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/gov/infrastructure' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/gov/pendency
+Get case pendency stats
+
+Fetch official government data on case backlogs across states.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+state                | query      | No       |            | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/gov/pendency' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/gov/disposal
+Get case disposal rates
+
+Fetch yearly rates of case resolution.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+year                 | query      | No       |            | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/gov/disposal' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/cl/search
+Search CourtListener opinions
+
+Search US legal opinions for international precedent comparison.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+q                    | query      | Yes      | string     | No description
+court                | query      | No       |            | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/cl/search' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/cl/opinion/{opinion_id}
+Get CL legal opinion
+
+Fetch full text of a CourtListener opinion.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+opinion_id           | path       | Yes      | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/cl/opinion/example_id' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/cl/docket/{docket_id}
+Get CL docket entries
+
+Fetch history of filings for a US case.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+docket_id            | path       | Yes      | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/cl/docket/example_id' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/cl/judge/{judge_id}
+Get CL judge bio
+
+Fetch biographic and career metadata for a judge.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+judge_id             | path       | Yes      | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/cl/judge/example_id' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/cl/citations/{opinion_id}
+Get CL citations
+
+Fetch list of cases cited by or citing this opinion.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+opinion_id           | path       | Yes      | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/cl/citations/example_id' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /api/v1/search/all
+Search across all legal APIs
+
+Fan-out search to all enabled Indian & Global APIs.
+Normalises and deduplicates results into a unified ranked list.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+q                    | query      | Yes      | string     | No description
+intl                 | query      | No       | boolean    | Include international results (CourtListener)
+max                  | query      | No       | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/api/v1/search/all' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+POST /api/v1/case/{case_id}/enrich
+Enrich synthetic case with real data
+
+Search for a real-world counterpart of a NyayMarg synthetic case on Indian Kanoon.
+If found, enriches the synthetic record with real judgment text and AI tags.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+case_id              | path       | Yes      | string     | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'POST' \
+  'http://localhost:8000/api/v1/case/example_id/enrich' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+POST /api/v1/ik/import
+Import real cases into analytics
+
+Queues a background task to import real judgments from IK into the platform 
+similarity index. Triggers an async Celery worker.
+
+Parameters:
+Name                 | Located In | Required | Type       | Description
+--------------------------------------------------------------------------------
+query                | query      | Yes      | string     | No description
+count                | query      | No       | integer    | No description
+
+Responses:
+  200: Successful Response
+  422: Validation Error
+
+Example usage (Curl):
+curl -X 'POST' \
+  'http://localhost:8000/api/v1/ik/import' \
+  -H 'accept: application/json'
+
+========================================================
+
+--------------------------------------------------------
+GET /health
+API health check
+
+Returns DB, Redis, and ML model loaded status. Always unauthenticated.
+
+Responses:
+  200: Successful Response
+
+Example usage (Curl):
+curl -X 'GET' \
+  'http://localhost:8000/health' \
+  -H 'accept: application/json'
+
+========================================================
+
