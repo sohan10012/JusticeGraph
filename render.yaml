@@ -28,17 +28,17 @@ services:
       - key: REDIS_URL
         fromService:
           name: nyaymarg-redis
-          type: redis
+          type: keyvalue
           property: connectionString
       - key: CELERY_BROKER_URL
         fromService:
           name: nyaymarg-redis
-          type: redis
+          type: keyvalue
           property: connectionString
       - key: CELERY_RESULT_BACKEND
         fromService:
           name: nyaymarg-redis
-          type: redis
+          type: keyvalue
           property: connectionString
       - key: MODEL_ARTEFACTS_DIR
         value: "/tmp/artefacts"
@@ -64,6 +64,12 @@ services:
         value: "False"
     healthCheckPath: /health
 
+  # ── Redis (Managed Key-Value) ──────────────────────────────────────────────
+  - type: keyvalue
+    name: nyaymarg-redis
+    region: singapore
+    plan: free
+
   # ── Celery Worker ───────────────────────────────────────────────────────────
   # Disabled for initial Render deploy (free tier stability)
   # - type: worker
@@ -84,17 +90,17 @@ services:
   #     - key: REDIS_URL
   #       fromService:
   #         name: nyaymarg-redis
-  #         type: redis
+  #         type: keyvalue
   #         property: connectionString
   #     - key: CELERY_BROKER_URL
   #       fromService:
   #         name: nyaymarg-redis
-  #         type: redis
+  #         type: keyvalue
   #         property: connectionString
   #     - key: CELERY_RESULT_BACKEND
   #       fromService:
   #         name: nyaymarg-redis
-  #         type: redis
+  #         type: keyvalue
   #         property: connectionString
   #     - key: SECRET_KEY
   #       fromService:
@@ -112,6 +118,3 @@ databases:
     databaseName: nyaymarg
     user: nyaymarg
 
-  - name: nyaymarg-redis
-    region: singapore
-    plan: free
