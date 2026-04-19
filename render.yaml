@@ -69,6 +69,9 @@ services:
     name: nyaymarg-redis
     region: singapore
     plan: free
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: Allow all connections (required for schema)
 
   # ── Celery Worker ───────────────────────────────────────────────────────────
   # Disabled for initial Render deploy (free tier stability)
