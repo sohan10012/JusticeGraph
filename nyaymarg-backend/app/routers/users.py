@@ -9,9 +9,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security import UserRole, require_role
+from app.core.security import require_role
 from app.database import get_db
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.schemas.common import PaginatedResponse
 from app.schemas.user import AdminRoleChange, UserOut
 

@@ -71,22 +71,6 @@ def decode_token(token: str) -> dict[str, Any]:
         ) from exc
 
 
-# ── Role hierarchy ────────────────────────────────────────────────────────────
-class UserRole(str, Enum):
-    citizen    = "citizen"
-    lawyer     = "lawyer"
-    researcher = "researcher"
-    admin      = "admin"
-
-
-_ROLE_RANK: dict[UserRole, int] = {
-    UserRole.citizen:    0,
-    UserRole.lawyer:     1,
-    UserRole.researcher: 2,
-    UserRole.admin:      3,
-}
-
-
 # ── Current user dependency ───────────────────────────────────────────────────
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
@@ -96,6 +80,7 @@ async def get_current_user(
     user dict. Routers that need DB-loaded user objects should further query.
     """
     from app.core.exceptions import AuthenticationError
+    from app.models.user import UserRole
 
     if credentials is None:
         raise AuthenticationError()

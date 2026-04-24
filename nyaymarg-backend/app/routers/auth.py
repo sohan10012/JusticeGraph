@@ -12,7 +12,6 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import (
-    UserRole,
     create_access_token,
     create_refresh_token,
     decode_token,
@@ -21,7 +20,7 @@ from app.core.security import (
     verify_password,
 )
 from app.database import get_db
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.schemas.user import (
     AdminRoleChange,
     RefreshRequest,
@@ -44,21 +43,39 @@ async def register(body: UserRegisterRequest, db: AsyncSession = Depends(get_db)
     """Register a new NyayMarg account."""
     body.full_name = bleach.clean(body.full_name)
 
-    # Uniqueness check
-    existing = await db.execute(select(User).where(User.email == body.email))
+    # Normalize email
+    email_str = str(body.email).strip().lower()
+
+    # Uniqueness check for email
+    existing = await db.execute(select(User).where(User.email == email_str))
     if existing.scalar():
         raise HTTPException(status.HTTP_409_CONFLICT, "Email already registered")
 
-    user = User(
-        id=uuid.uuid4(),
-        email=str(body.email),
-        username=_to_username(str(body.email)),
-        full_name=body.full_name,
-        hashed_password=hash_password(body.password),
-        role=UserRole(body.role),
-    )
-    db.add(user)
-    await db.flush()
+    base_username = _to_username(email_str)
+    username = base_username
+    
+    # Check for username collision (common with same prefix across domains)
+    counter = 1
+    while True:
+        existing_u = await db.execute(select(User).where(User.username == username))
+        if not existing_u.scalar():
+            break
+        username = f"{base_username}_{counter}"
+        counter += 1
+
+    try:
+        user = User(
+            id=uuid.uuid4(),
+            email=email_str,
+            username=username,
+            full_name=body.full_name,
+            hashed_password=hash_password(body.password),
+            role=UserRole(body.role),
+        )
+        db.add(user)
+        await db.flush()
+    except Exception as exc:
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, f"Database error during registration: {exc}")
 
     token_data = {"sub": str(user.id), "email": user.email, "role": user.role.value}
     return TokenResponse(
@@ -70,7 +87,8 @@ async def register(body: UserRegisterRequest, db: AsyncSession = Depends(get_db)
 
 @router.post("/login", response_model=TokenResponse)
 async def login(body: UserLoginRequest, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(User).where(User.email == str(body.email)))
+    email_str = str(body.email).strip().lower()
+    result = await db.execute(select(User).where(User.email == email_str))
     user   = result.scalar_one_or_none()
     if not user or not verify_password(body.password, str(user.hashed_password)):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid credentials")
