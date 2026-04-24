@@ -3,6 +3,8 @@ app/config.py — NyayMarg centralised settings via pydantic-settings.
 """
 from __future__ import annotations
 
+import os
+from pathlib import Path
 from functools import lru_cache
 from pydantic import model_validator
 from pydantic_settings import BaseSettings
@@ -102,16 +104,25 @@ class Settings(BaseSettings):
         Auto-enables APIs if their respective tokens/keys are present.
         Ensures KANOON_DEV remains manual or gated by key presence.
         """
-        self.IK_ENABLED = bool(self.IK_API_TOKEN)
-        self.ECOURTSINDIA_ENABLED = bool(self.ECOURTSINDIA_TOKEN)
-        self.DATA_GOV_ENABLED = bool(self.DATA_GOV_API_KEY)
-        self.COURTLISTENER_ENABLED = bool(self.COURTLISTENER_TOKEN)
+        # Auto-enable if token is present, but respect explicit True in .env
+        if not self.IK_ENABLED:
+            self.IK_ENABLED = bool(self.IK_API_TOKEN)
+        
+        if not self.ECOURTSINDIA_ENABLED:
+            self.ECOURTSINDIA_ENABLED = bool(self.ECOURTSINDIA_TOKEN)
+            
+        if not self.DATA_GOV_ENABLED:
+            self.DATA_GOV_ENABLED = bool(self.DATA_GOV_API_KEY)
+            
+        if not self.COURTLISTENER_ENABLED:
+            self.COURTLISTENER_ENABLED = bool(self.COURTLISTENER_TOKEN)
 
-        # Gated by key presence
+        # Gated by key presence for KANOON_DEV
         if not self.KANOON_DEV_API_KEY:
             self.KANOON_DEV_ENABLED = False
-        else:
-            self.KANOON_DEV_ENABLED = True
+        # If key is present and it wasn't already set to False explicitly, enable it
+        elif self.KANOON_DEV_ENABLED is None: # Pydantic might default to False
+             self.KANOON_DEV_ENABLED = True
 
         # Render provides postgres://; async SQLAlchemy expects postgresql+asyncpg://
         if self.DATABASE_URL.startswith("postgres://"):
@@ -121,7 +132,10 @@ class Settings(BaseSettings):
 
         return self
 
-    model_config = {"env_file": ".env", "extra": "ignore"}
+    model_config = {
+        "env_file": str(Path(__file__).parent.parent / ".env"),
+        "extra": "ignore"
+    }
 
 
 @lru_cache
