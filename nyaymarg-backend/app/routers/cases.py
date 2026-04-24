@@ -6,7 +6,9 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, Query
 
 from app.core.exceptions import NotFoundError
-from app.core.security import UserRole, get_current_user, require_role
+from app.core.security import get_current_user, require_role
+from app.models.user import UserRole
+import uuid, datetime
 from app.database import get_db
 from app.schemas.case import CaseCreateRequest, CaseOut, CaseUpdateRequest
 from app.schemas.common import PaginatedResponse
