@@ -14,6 +14,8 @@ from __future__ import annotations
 import asyncio
 from typing import Any
 
+import re
+import html
 import structlog
 
 from app.config import settings
@@ -46,14 +48,99 @@ class ExternalService:
     async def ik_fragment(self, doc_id: int, query: str) -> dict:
         if not settings.IK_ENABLED:
             return _disabled("IK")
+        
         from app.external.indian_kanoon.client import IndianKanoonClient
-        return await IndianKanoonClient().get_fragment(doc_id, query)
+        client = IndianKanoonClient()
+        
+        try:
+            # Get full document text (HTML)
+            doc_data = await client.get_document(doc_id)
+            if isinstance(doc_data, dict) and "error" in doc_data:
+                return doc_data
+            
+            # HTML cleaning
+            html_content = doc_data.get("doc", "")
+            if not html_content:
+                return {"fragment": "No match found"}
+                
+            clean_text = self._clean_html(html_content)
+            
+            # Case-insensitive search
+            query_lower = query.lower()
+            text_lower = clean_text.lower()
+            
+            idx = text_lower.find(query_lower)
+            if idx == -1:
+                return {"fragment": "No match found"}
+            
+            # Extract snippet (±80 chars)
+            snippet = self._extract_snippet(clean_text, idx, len(query))
+            return {"fragment": snippet}
+            
+        except Exception as exc:
+            logger.error("ik.fragment_failed", doc_id=doc_id, error=str(exc))
+            return {"error": "Error in evaluating the fragments", "detail": str(exc)}
 
     async def ik_metadata(self, doc_id: int) -> dict:
         if not settings.IK_ENABLED:
             return _disabled("IK")
+            
         from app.external.indian_kanoon.client import IndianKanoonClient
-        return await IndianKanoonClient().get_metadata(doc_id)
+        client = IndianKanoonClient()
+        
+        try:
+            # Try getting metadata directly
+            meta = await client.get_metadata(doc_id)
+            
+            # Check if metadata failed or returned an error
+            has_error = False
+            if isinstance(meta, dict):
+                if meta.get("error"):
+                    has_error = True
+                elif "No such document" in str(meta.get("detail", "")):
+                    has_error = True
+
+            if has_error:
+                # Fallback to get_document which often contains metadata in its wrapper
+                doc_data = await client.get_document(doc_id)
+                if isinstance(doc_data, dict) and "error" in doc_data:
+                    return {"error": "Document not found"}
+                meta = doc_data
+
+            # Normalize response to requested structure
+            return {
+                "title":    meta.get("title") or meta.get("headline", "Unknown Title"),
+                "date":     meta.get("publishdate") or meta.get("date", "Unknown Date"),
+                "court":    meta.get("court") or "Unknown Court",
+                "citation": meta.get("docsource") or meta.get("citation", "Unknown Citation")
+            }
+            
+        except Exception as exc:
+            logger.error("ik.metadata_failed", doc_id=doc_id, error=str(exc))
+            return {"error": "Document not found"}
+
+    # ── Helpers ───────────────────────────────────────────────────────────────
+
+    def _clean_html(self, raw_html: str) -> str:
+        """Strip tags and normalize whitespace without external dependencies."""
+        # Unescape HTML entities
+        text = html.unescape(raw_html)
+        # Strip tags using regex
+        text = re.sub(r'<[^>]*>', ' ', text)
+        # Normalize whitespace
+        return re.sub(r'\s+', ' ', text).strip()
+
+    def _extract_snippet(self, text: str, match_idx: int, query_len: int, context: int = 80) -> str:
+        """Extract a meaningful snippet around a match."""
+        start = max(0, match_idx - context)
+        end = min(len(text), match_idx + query_len + context)
+        
+        snippet = text[start:end]
+        if start > 0:
+            snippet = "..." + snippet
+        if end < len(text):
+            snippet = snippet + "..."
+        return snippet
 
     # ══ kanoon.dev ════════════════════════════════════════════════════════════
 
@@ -239,7 +326,7 @@ class ExternalService:
             if not docs:
                 return {"enriched": False, "reason": "no IK match"}
             top = docs[0]
-            meta = await client.get_metadata(top["tid"])
+            meta = await self.ik_metadata(top["tid"])
             return {"enriched": True, "ik_doc_id": top["tid"], **meta}
         except Exception as exc:
             logger.warning("enrich.failed", case_id=case_id, error=str(exc))
