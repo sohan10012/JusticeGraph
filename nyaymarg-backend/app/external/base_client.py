@@ -85,14 +85,18 @@ class BaseAPIClient:
                 reraise=True,
             ):
                 with attempt:
+                    # Don't pop from kwargs inside the retry loop as it mutates it for subsequent attempts
+                    headers = {**BASE_HEADERS, **kwargs.get("headers", {})}
+                    req_kwargs = {k: v for k, v in kwargs.items() if k != "headers"}
+
                     async with httpx.AsyncClient(
                         timeout=self.timeout,
                         follow_redirects=True,
                     ) as client:
                         resp = await client.request(
                             method, url,
-                            headers={**BASE_HEADERS, **kwargs.pop("headers", {})},
-                            **kwargs,
+                            headers=headers,
+                            **req_kwargs,
                         )
                         resp.raise_for_status()
                         data = resp.json()
@@ -111,17 +115,33 @@ class BaseAPIClient:
                         return data  # type: ignore[return-value]
 
         except httpx.HTTPStatusError as exc:
+            msg = exc.response.text[:200]
             logger.warning(
                 "external.http_error",
                 source=self.name,
                 url=url,
                 status=exc.response.status_code,
-                detail=exc.response.text[:200],
+                detail=msg,
             )
-            raise
+            return {
+                "error": f"External API {self.name} returned {exc.response.status_code}",
+                "detail": msg,
+                "url": url
+            }
+        except json.JSONDecodeError as exc:
+            logger.error("external.json_error", source=self.name, url=url, error=str(exc))
+            return {
+                "error": f"External API {self.name} returned non-JSON response",
+                "detail": str(exc),
+                "url": url
+            }
         except Exception as exc:
             logger.error("external.request_failed", source=self.name, url=url, error=str(exc))
-            raise
+            return {
+                "error": f"External API {self.name} request failed",
+                "detail": str(exc),
+                "url": url
+            }
 
     async def get(self, path: str, *, params: dict | None = None, **kw) -> Any:
         return await self._request("GET", f"{self.base_url}{path}", params=params, **kw)
