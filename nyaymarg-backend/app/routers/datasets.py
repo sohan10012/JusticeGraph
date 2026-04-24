@@ -13,7 +13,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
-from app.core.security import UserRole, get_current_user, require_role
+from app.core.security import get_current_user, require_role
+from app.models.user import UserRole
 from app.database import get_db
 from app.models.dataset import Dataset
 from app.schemas.notification import DatasetOut, DatasetStatusResponse

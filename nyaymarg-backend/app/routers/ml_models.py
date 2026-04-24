@@ -6,7 +6,8 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security import UserRole, get_current_user, require_role
+from app.core.security import get_current_user, require_role
+from app.models.user import UserRole
 from app.database import get_db
 from app.data.seed import get_registry
 from app.schemas.notification import TrainJobResponse, TrainJobStatus
