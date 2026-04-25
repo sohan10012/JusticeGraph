@@ -34,11 +34,14 @@ def detect_pii(text: str) -> bool:
 
 # ── Password helpers ──────────────────────────────────────────────────────────
 def hash_password(plain: str) -> str:
-    return pwd_context.hash(plain)
+    # bcrypt hard-limits to 72 bytes; newer passlib raises instead of truncating silently
+    safe = plain.encode("utf-8")[:72].decode("utf-8", errors="ignore")
+    return pwd_context.hash(safe)
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
+    safe = plain.encode("utf-8")[:72].decode("utf-8", errors="ignore")
+    return pwd_context.verify(safe, hashed)
 
 
 # ── JWT helpers ───────────────────────────────────────────────────────────────
