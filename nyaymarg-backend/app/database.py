@@ -16,6 +16,12 @@ engine = create_async_engine(
     max_overflow=settings.DATABASE_MAX_OVERFLOW,
     echo=settings.DEBUG,
     future=True,
+    connect_args={
+        "command_timeout": 60,
+        "server_settings": {
+            "application_name": "nyaymarg_backend",
+        }
+    } if "postgres" in settings.DATABASE_URL else {}
 )
 
 AsyncSessionLocal = async_sessionmaker(
