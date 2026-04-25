@@ -69,7 +69,7 @@ class Settings(BaseSettings):
     KANOON_DEV_ENABLED: bool = False
 
     # ── ECIAPI — eCourts India API (eciapi.akshit.me) ─────────────────────────
-    ECIAPI_BASE:    str  = "https://eciapi.akshit.me"
+    ECIAPI_BASE:    str  = "https://court-api.kleopatra.io"
     ECIAPI_ENABLED: bool = True
 
     # ── eCourtsIndia.com API (₹200 free credits) ──────────────────────────────

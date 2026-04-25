@@ -168,31 +168,7 @@ class ExternalService:
         from app.external.kanoon_dev.client import KanoonDevClient
         return await KanoonDevClient().get_insights(case_id)
 
-    # ══ ECIAPI (always enabled by default) ═══════════════════════════════════
-
-    async def eci_case(self, cnr: str) -> Any:
-        if not settings.ECIAPI_ENABLED:
-            return _disabled("ECIAPI")
-        from app.external.ecourts.eciapi_client import ECIAPIClient
-        return await ECIAPIClient().get_case_by_cnr(cnr)
-
-    async def eci_search(self, party: str, court: str | None = None) -> Any:
-        if not settings.ECIAPI_ENABLED:
-            return _disabled("ECIAPI")
-        from app.external.ecourts.eciapi_client import ECIAPIClient
-        return await ECIAPIClient().search_by_party(party, court=court)
-
-    async def eci_causelist(self, court_code: str, date: str) -> Any:
-        if not settings.ECIAPI_ENABLED:
-            return _disabled("ECIAPI")
-        from app.external.ecourts.eciapi_client import ECIAPIClient
-        return await ECIAPIClient().get_causelist(court_code, date)
-
-    async def eci_courts(self) -> Any:
-        if not settings.ECIAPI_ENABLED:
-            return _disabled("ECIAPI")
-        from app.external.ecourts.eciapi_client import ECIAPIClient
-        return await ECIAPIClient().list_courts()
+    # ══ ECIAPI (discontinued akshit.me provider removed) ═════════════════════
 
     # ══ eCourtsIndia.com ═════════════════════════════════════════════════════
 

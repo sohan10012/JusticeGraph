@@ -15,12 +15,57 @@ Organised into groups:
 from __future__ import annotations
 
 from typing import Any
-from fastapi import APIRouter, Query
-
+import httpx
+import logging
 from app.services.external_service import ExternalService
 
 router = APIRouter()
 _svc = ExternalService()
+
+
+def fetch_case_from_kleopatra(cnr: str):
+    """
+    Helper function to fetch case details from Kleopatra API.
+    CNR format validation: Uppercase, ~16 characters.
+    """
+    # 1. Validation
+    if not isinstance(cnr, str) or not cnr.isupper() or not (15 <= len(cnr) <= 17):
+        return {
+            "status": "invalid",
+            "message": "Invalid CNR format"
+        }
+
+    url = f"https://court-api.kleopatra.io/case/{cnr}"
+
+    # 2. Fetch with 10s timeout
+    try:
+        with httpx.Client(timeout=10.0) as client:
+            resp = client.get(url)
+
+            # 3. Handle Responses
+            if resp.status_code == 200:
+                return {
+                    "status": "success",
+                    "data": resp.json()
+                }
+            elif resp.status_code == 404:
+                return {
+                    "status": "not_found",
+                    "message": "Case not found in provider",
+                    "cnr": cnr
+                }
+            else:
+                logging.error(f"Kleopatra API error: {resp.status_code} for CNR {cnr}")
+                return {
+                    "status": "error",
+                    "message": "External API failed"
+                }
+    except Exception as exc:
+        logging.error(f"Kleopatra API connection failed: {exc}")
+        return {
+            "status": "error",
+            "message": "External API failed"
+        }
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -87,36 +132,13 @@ async def kd_insights(case_id: str):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# ECIAPI — free, no auth, enabled by default
-# ══════════════════════════════════════════════════════════════════════════════
-
 @router.get("/eci/case/{cnr}", summary="Get eCourts case by CNR")
 async def eci_case(cnr: str):
     """
     Full case status from India's eCourts system using the CNR number.
-    CNR format: `DLHC010001232024` (state + court + number + year).
-    Returns parties, advocates, hearing history, next date, acts.
-    **Free — no authentication required.**
+    Uses the Kleopatra API provider.
     """
-    return await _svc.eci_case(cnr)
-
-
-@router.get("/eci/search", summary="Search eCourts by party name")
-async def eci_search(name: str = Query(...), court: str | None = None):
-    """Search for cases by party name in a specific court."""
-    return await _svc.eci_search(name, court=court)
-
-
-@router.get("/eci/causelist", summary="Get court causelist")
-async def eci_causelist(court: str = Query(...), date: str = Query(...)):
-    """Fetch the list of cases scheduled for a court on a specific date (DD-MM-YYYY)."""
-    return await _svc.eci_causelist(court, date)
-
-
-@router.get("/eci/courts", summary="List eCourts court codes")
-async def eci_courts():
-    """Returns metadata about courts supported for indexing."""
-    return await _svc.eci_courts()
+    return fetch_case_from_kleopatra(cnr)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
