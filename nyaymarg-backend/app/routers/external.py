@@ -15,6 +15,7 @@ Organised into groups:
 from __future__ import annotations
 
 from typing import Any
+from fastapi import APIRouter, Query
 import httpx
 import logging
 from app.services.external_service import ExternalService
