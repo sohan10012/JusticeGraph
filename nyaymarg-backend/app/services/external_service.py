@@ -230,11 +230,11 @@ class ExternalService:
 
     # ══ CourtListener ════════════════════════════════════════════════════════
 
-    async def cl_search(self, query: str, court: str | None = None) -> Any:
+    async def cl_search(self, query: str, court: str | None = None, cursor: str | None = None) -> Any:
         if not settings.COURTLISTENER_ENABLED:
             return _disabled("COURTLISTENER")
         from app.external.courtlistener.client import CourtListenerClient
-        return await CourtListenerClient().search_opinions(query, court=court)
+        return await CourtListenerClient().search_opinions(query, court=court, cursor=cursor)
 
     async def cl_opinion(self, opinion_id: int) -> Any:
         if not settings.COURTLISTENER_ENABLED:

@@ -213,9 +213,13 @@ async def gov_disposal(year: int | None = Query(None, ge=2000)):
 # ══════════════════════════════════════════════════════════════════════════════
 
 @router.get("/cl/search", summary="Search CourtListener opinions")
-async def cl_search(q: str = Query(...), court: str | None = None):
+async def cl_search(
+    q:       str          = Query(...),
+    court:   str | None   = Query(None),
+    cursor:  str | None   = Query(None),
+):
     """Search US legal opinions for international precedent comparison."""
-    return await _svc.cl_search(q, court=court)
+    return await _svc.cl_search(q, court=court, cursor=cursor)
 
 
 @router.get("/cl/opinion/{opinion_id}", summary="Get CL legal opinion")

@@ -23,7 +23,7 @@ class CourtListenerClient(BaseAPIClient):
         return {"Authorization": f"Token {settings.COURTLISTENER_TOKEN}"}
 
     # ── ENDPOINT 1: Search opinions ───────────────────────────────────────────
-    async def search_opinions(self, query: str, court: str | None = None) -> dict:
+    async def search_opinions(self, query: str, court: str | None = None, cursor: str | None = None) -> dict:
         """
         GET /search/?type=o&q=...
         Full-text search across millions of US legal opinions.
@@ -32,6 +32,8 @@ class CourtListenerClient(BaseAPIClient):
         params: dict = {"type": "o", "q": query, "format": "json"}
         if court:
             params["court"] = court
+        if cursor:
+            params["cursor"] = cursor
         return await self.get("/search/", headers=self._headers(), params=params)
 
     # ── ENDPOINT 2: Get single opinion ────────────────────────────────────────
