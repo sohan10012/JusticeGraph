@@ -18,6 +18,7 @@ engine = create_async_engine(
     future=True,
     connect_args={
         "command_timeout": 60,
+        "ssl": "require" if "render.com" in settings.DATABASE_URL else False,
         "server_settings": {
             "application_name": "nyaymarg_backend",
         }
