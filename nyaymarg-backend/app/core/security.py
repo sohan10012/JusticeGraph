@@ -33,15 +33,23 @@ def detect_pii(text: str) -> bool:
 
 
 # ── Password helpers ──────────────────────────────────────────────────────────
+# Use bcrypt directly — passlib on Render throws "password cannot be longer than
+# 72 bytes" indiscriminately due to a version bug in the deployed environment.
+import bcrypt as _bcrypt
+
 def hash_password(plain: str) -> str:
-    # bcrypt hard-limits to 72 bytes; newer passlib raises instead of truncating silently
-    safe = plain.encode("utf-8")[:72].decode("utf-8", errors="ignore")
-    return pwd_context.hash(safe)
+    """Hash a password using bcrypt, safely capped at 72 UTF-8 bytes."""
+    raw = plain.encode("utf-8")[:72]
+    return _bcrypt.hashpw(raw, _bcrypt.gensalt()).decode("utf-8")
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    safe = plain.encode("utf-8")[:72].decode("utf-8", errors="ignore")
-    return pwd_context.verify(safe, hashed)
+    """Verify a bcrypt-hashed password."""
+    raw = plain.encode("utf-8")[:72]
+    try:
+        return _bcrypt.checkpw(raw, hashed.encode("utf-8"))
+    except Exception:
+        return False
 
 
 # ── JWT helpers ───────────────────────────────────────────────────────────────
